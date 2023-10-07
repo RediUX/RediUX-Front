@@ -24,7 +24,7 @@ const Cadastrar = () => {
         event.preventDefault()
 
         const conteudo = { titulo, autor, descricao, link, tags, midia }
-        axios.post("http://localhost:3001/contents/register", conteudo)
+        axios.post("https://rediuxbacken.onrender.com/contents/register", conteudo)
             .then(
                 (response) => {
                     alert("Conteudo " +  titulo  + " adicionado com sucesso!")
