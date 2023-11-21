@@ -1,7 +1,7 @@
 // import Tollbar from "./components/00ToolbarU/Toolbar";
 // import Tollbaradm from "./components/00TollbarADM/TollbarADM";n
 
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import Home from "./components/01Home/Home";
 import ListaConteudos from "./components/02ListaConteudos/ListaConteudos";
@@ -17,29 +17,47 @@ import ConteudoADM from "./components/06ConteudoADM/ConteudoADM";
 import Cadastrar from "./components/07Cadastar/Cadastrar";
 import Editar from "./components/08Editar/Editar";
 import ResultadosPesquisas from "./components/10ResultadosPesquisa/ResultadosPesquisas"
+import { useGlobalState } from "./components/04Login/GlobalStateContext";
 
 function App() {
-  return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<Home />} path="/" exact />
-          <Route element={<ListaConteudos />} path="/Pesquisa" />
-          <Route element={<Conteudo />} path="/Conteudo" />
-          <Route element={<Livro />} path="/Livros" />
-          <Route element={<Artigo />} path="/Artigos" />
-          <Route element={<Podcast />} path="/Podcasts" />
-          <Route element={<Video />} path="/Videos" />
 
-          <Route element={<Login />} path="/ADM/Login" />
-          <Route element={<ListaConteudosADM />} path="/ADM/ListaConteudos" />
-          <Route element={<ConteudoADM />} path="/ADM/Conteudo/:id" />
-          <Route element={<Cadastrar />} path="/ADM/Cadastrar" />
-          <Route element={<Editar />} path="/ADM/Editar/:id" />
-          <Route element={<ResultadosPesquisas />} path="/results" />
-        </Routes>
-      </BrowserRouter>
-    </>
+  const { globalState } = useGlobalState();
+  const { estaAutenticado } = globalState;
+
+  return (
+    <Routes>
+      <Route element={<Home />} path="/" exact />
+      <Route element={<ListaConteudos />} path="/Pesquisa" />
+      <Route element={<Conteudo />} path="/Conteudo" />
+      <Route element={<Livro />} path="/Livros" />
+      <Route element={<Artigo />} path="/Artigos" />
+      <Route element={<Podcast />} path="/Podcasts" />
+      <Route element={<Video />} path="/Videos" />
+
+      <Route
+        path="/ADM/Login"
+        element={estaAutenticado ? (<Navigate to="/ADM/ListaConteudos" />) : (<Login />)}
+      />
+      <Route
+        path="/ADM/ListaConteudos"
+        element={estaAutenticado ? <ListaConteudosADM /> : <Login />}
+      />
+
+      <Route
+        path="/ADM/Conteudo/:id"
+        element={estaAutenticado ? <ConteudoADM /> : <Login />}
+      />
+      <Route 
+        path="/ADM/Cadastrar"
+        element={estaAutenticado ? <Cadastrar /> : <Login />}
+      />
+      <Route
+      path="/ADM/Editar/:id"
+      element={estaAutenticado ? <Editar /> : <Login />}
+      />
+
+      <Route element={<ResultadosPesquisas />} path="/results" />
+    </Routes>
   );
 }
 

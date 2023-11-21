@@ -1,9 +1,14 @@
 import { Button, Toolbar } from "@mui/material";
 import Logo from "./logo-sml.svg";
 import { Logout } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Tollbaradm = () => {
+  const handleLogout = () => {
+    localStorage.removeItem("authData");
+    window.location.reload()
+  };
+
     return (
         <Toolbar
             sx={{
@@ -19,6 +24,7 @@ const Tollbaradm = () => {
 
             <Link to="/ADM/Login">
                 <Button
+                    onClick={handleLogout}
                     variant="outlined"
                     startIcon={<Logout />}
                     sx={{

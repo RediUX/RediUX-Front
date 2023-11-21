@@ -6,8 +6,9 @@ import { Container, Typography, Button, Box, TextField, InputAdornment, FormCont
 import SearchIcon from "@mui/icons-material/Search";
 import { Link } from "react-router-dom";
 import { ArrowBackIosNew, Book } from "@mui/icons-material";
-import folder from "./folder.svg"
+import folder from "./folder2.svg"
 import erroimagem from "./Search engines-bro.svg"
+
 
 
 const SearchResults = () => {
@@ -49,6 +50,8 @@ const SearchResults = () => {
   const tagChange = (event) => {
     setTag(event.target.value);
   };
+
+  console.log(searchResults);
 
   return (
     <>
@@ -170,18 +173,31 @@ const SearchResults = () => {
               <Box
                 sx={{
                   display: "flex",
-                  alignItems:"flex-start",
+                  alignItems: "flex-start",
                   my: 5,
                   ml: 8,
-                  
+
                 }}
               >
                 <Card sx={{ mr: 2 }}>
+                  <div
+                    style={{
+                      width:'100%',
+                      backgroundColor: '#becbeb'
+                    }}
+                  >
                   <CardMedia
-                    sx={{ height: 120}}
-                    image={folder}
-                    tittle="Conteúdo"
+                    sx={{
+                      height: 120,
+                      width: 80,
+                      margin: 'auto',
+                      backgroundSize: '90%',
+                      backgroundPosition: 'center',
+                    }}
+                    image={result.imgUrl || folder}
+                    title="Conteúdo"
                   />
+                  </div>
                   <CardContent
                     key={result._id}
                     sx={{
@@ -207,24 +223,24 @@ const SearchResults = () => {
                     <Typography variant="p" component="div"> {result.descricao} </Typography>
                   </CardContent>
                   <CardActions>
-                    <Link to= {result.link}>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      sx={{
-                        mt: -1,
-                        ml: 1,
-                        mb: 1,
-                        color: "#0C2D8A",
-                        borderColor: "#0C2D8A",
-                        '&:hover': {
-                          backgroundColor: "#0C2D8A",
-                          color: "#BECBEA",
-                        },
-                      }}
-                    >
-                      Ir ao conteúdo
-                    </Button>
+                    <Link to={result.link} target="_blank">
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        sx={{
+                          mt: -1,
+                          ml: 1,
+                          mb: 1,
+                          color: "#0C2D8A",
+                          borderColor: "#0C2D8A",
+                          '&:hover': {
+                            backgroundColor: "#0C2D8A",
+                            color: "#BECBEA",
+                          },
+                        }}
+                      >
+                        Ir ao conteúdo
+                      </Button>
                     </Link>
                   </CardActions>
                 </Card>
@@ -233,7 +249,7 @@ const SearchResults = () => {
           </>
         ) : (
           <Container
-          display="flex"
+            display="flex"
             sx={{
               display: "flex",
               alignItems: "center",
@@ -243,11 +259,11 @@ const SearchResults = () => {
           >
             <img src={erroimagem} alt="" height={400} />
             <Stack
-            display="flex"
-            flexDirection={"Column"}
+              display="flex"
+              flexDirection={"Column"}
             >
               <Typography variant="h3" component="div" fontWeight={500}> Que Pena! </Typography>
-              <Typography variant="h5" component="div" sx={{mt:2}}> Infelizmente ainda<br/> não temos este conteúdo</Typography>
+              <Typography variant="h5" component="div" sx={{ mt: 2 }}> Infelizmente ainda<br /> não temos este conteúdo</Typography>
             </Stack>
 
           </Container>

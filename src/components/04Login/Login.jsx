@@ -1,32 +1,71 @@
 import { Container, Box, Button, TextField } from "@mui/material"
 import Logo from "./logo.svg"
 import Ilustracao from "./ilustracao.svg"
-import { Link } from "react-router-dom"
-import axios from "axios"
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import {signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '../../firebase'
+import { useGlobalState } from "./GlobalStateContext"
+import { useEffect } from "react"
 
 const Login = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const navigate = useNavigate();
+    const { globalState, setGlobalState } = useGlobalState();
+    const { user, password } = globalState;
+  
+    const handleUserChange = (e) => {
+      const newUser = e.target.value;
+      setGlobalState((prevGlobalState) => ({
+        ...prevGlobalState,
+        user: newUser,
+      }));
+    };
+  
+    const handlePasswordChange = (e) => {
+      const newPassword = e.target.value;
+      setGlobalState((prevGlobalState) => ({
+        ...prevGlobalState,
+        password: newPassword,
+      }));
+    };
 
-    const handleLogin = () => {
-        const users = [
-            { username: 'edonog', password: '509157' },
-            { username: 'user2', password: 'password2' },
-        ];
-
-        const isValidUser = users.some(
-            (user) => user.username === username && user.password === password
-        )
-
-        if (isValidUser) {
-            navigate('/adm/listaconteudos')
-        } else {
-            alert("Login Incorreto!")
+    const saveAuthToLocalStorage = (authData) => {
+        localStorage.setItem("authData", JSON.stringify(authData));
+      };
+      
+      
+      const getAuthFromLocalStorage = () => {
+        const authData = localStorage.getItem("authData");
+        return authData ? JSON.parse(authData) : null;
+      };
+  
+      const signIn = (e) => {
+        e.preventDefault();
+        signInWithEmailAndPassword(auth, user, password)
+          .then((userCredential) => {
+            const authData = {
+              user: userCredential.user,
+            };
+            setGlobalState((prevGlobalState) => ({
+              ...prevGlobalState,
+              estaAutenticado: true,
+            }));
+            saveAuthToLocalStorage(authData); 
+          })
+          .catch((error) => {
+            setGlobalState((prevGlobalState) => ({
+              ...prevGlobalState,
+              estaAutenticado: false,
+            }));
+          });
+      };
+      
+      useEffect(() => {
+        const authData = getAuthFromLocalStorage();
+        if (authData) {
+          setGlobalState((prevGlobalState) => ({
+            ...prevGlobalState,
+            estaAutenticado: true,
+          }));
         }
-    }
+      }, []);
 
     return (
         <Container
@@ -71,8 +110,8 @@ const Login = () => {
                     id="username"
                     name="username"
                     type="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={user}
+                    onChange={handleUserChange}
                 />
 
                 <TextField
@@ -85,11 +124,11 @@ const Login = () => {
                     name="password"
                     type="password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handlePasswordChange}
                 />
 
                 <Button
-                    onClick={handleLogin}
+                    onClick={signIn}
 
                     sx={{
                         width: 280,
@@ -111,5 +150,4 @@ const Login = () => {
         </Container>
     )
 }
-
 export default Login

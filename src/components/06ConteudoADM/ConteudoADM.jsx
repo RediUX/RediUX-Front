@@ -16,12 +16,13 @@ const ConteudoADM = () => {
     const [link, setLink] = useState("")
     const [tags, setTags] = useState({ carreira: false, fundamentosUX: false, designInteracao: false, UI: false, arquitetura: false })
     const [midia, setMidia] = useState({ livro: false, artigo: false, video: false, podcast: false })
-
+    const [imgUrl, setImgUrl] = useState([])
 
     const { carreira, fundamentosUX, designInteracao, UI, arquitetura } = tags
     const { livro, artigo, video, podcast } = midia
     const { id } = useParams()
     const navigate = useNavigate()
+
 
     useEffect(
         () => {
@@ -34,6 +35,7 @@ const ConteudoADM = () => {
                         setLink(response.data.link)
                         setTags(response.data.tags)
                         setMidia(response.data.midia)
+                        setImgUrl(response.data.imgUrl)
                     }
                 )
                 .catch(error => console.log(error))

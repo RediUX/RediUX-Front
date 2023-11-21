@@ -4,8 +4,11 @@ import { MuiFileInput } from "mui-file-input"
 import { ArrowBackIosNew } from "@mui/icons-material"
 import { Link } from "react-router-dom"
 import axios from "axios"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { imageDb } from "../../firebase"
+import { getDownloadURL, listAll, ref, uploadBytes, uploadBytesResumable } from "@firebase/storage"
+import { v4 } from "uuid"
 
 const Cadastrar = () => {
 
@@ -18,16 +21,63 @@ const Cadastrar = () => {
 
     const { carreira, fundamentosUX, designInteracao, UI, arquitetura } = tags
     const { livro, artigo, video, podcast } = midia
+
+    const [file, setFile] = useState(null)
+    const [imgUrl, setImgUrl] = useState("")
+    
+    const handleChange = (newFile) => {
+        const imgRef = ref(imageDb, `files/${v4()}`)
+        setFile(newFile)
+        
+        uploadBytes(imgRef, newFile)
+            .then((snapshot) => {
+                console.log("Arquivo ou blob enviado com sucesso!", snapshot)
+                return getDownloadURL(snapshot.ref)
+            })
+            .then((url) => {
+                setImgUrl(url)
+            })
+            .catch((error) => {
+                console.error("Erro ao enviar o arquivo: ", error)
+            })
+    }
+    
+
+    useEffect(() => {
+        let isMounted = true;
+    
+        listAll(ref(imageDb, "files"))
+            .then((imgs) => {
+                if (isMounted) {
+                    const promises = imgs.items.map((val) => getDownloadURL(val))
+                    Promise.all(promises)
+                        .then((urls) => {
+                            
+                            console.log(urls);
+                            setImgUrl(urls);
+                        })
+                }
+            })
+            .catch((error) => {
+                console.error("Erro ao listar as imagens: ", error);
+            });
+    
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
     const navigate = useNavigate()
 
     function handleSubmit(event) {
         event.preventDefault()
 
-        const conteudo = { titulo, autor, descricao, link, tags, midia }
+        const conteudo = { titulo, autor, descricao, link, tags, midia, imgUrl }
+        console.log(conteudo);
         axios.post("http://localhost:3001/contents/register", conteudo)
             .then(
                 (response) => {
-                    alert("Conteudo " +  titulo  + " adicionado com sucesso!")
+                    alert("Conteudo " + titulo + " adicionado com sucesso!")
                     navigate("/ADM/ListaConteudos")
                 }
             )
@@ -50,11 +100,6 @@ const Cadastrar = () => {
                 [event.target.name]: event.target.checked
             }
         )
-    }
-
-    const [file, setFile] = useState(null)
-    const handleChange = (newFile) => {
-        setFile(newFile)
     }
 
     return (

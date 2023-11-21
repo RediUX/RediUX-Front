@@ -15,7 +15,8 @@ const Conteudo = () => {
     const [link, setLink] = useState("")
     const [tags, setTags] = useState({ carreira: false, fundamentosUX: false, designInteracao: false, UI: false, arquitetura: false })
     const [midia, setMidia] = useState({ livro: false, artigo: false, video: false, podcast: false })
-
+    //const [file, setFile] = useState(null)
+    const [imgUrl, setImgUrl] = useState([])
 
     const { carreira, fundamentosUX, designInteracao, UI, arquitetura } = tags
     const { livro, artigo, video, podcast } = midia
@@ -33,6 +34,7 @@ const Conteudo = () => {
                         setLink(response.data.link)
                         setTags(response.data.tags)
                         setMidia(response.data.midia)
+                        setImgUrl(response.data.imgUrl)
                     }
                 )
                 .catch(error => console.log(error))
@@ -43,7 +45,7 @@ const Conteudo = () => {
 
     function handleSubmit(event) {
         event.preventDefault()
-        const conteudo = { titulo, autor, descricao, link, tags, midia }
+        const conteudo = { titulo, autor, descricao, link, tags, midia, imgUrl }
         axios.put(`http://localhost:3001/contents/update/${id}`, conteudo)
             .then(
                 (response) => {
