@@ -54,6 +54,7 @@ const Login = () => {
               ...prevGlobalState,
               estaAutenticado: false,
             }));
+            alert("Usuário ou senha inválidos");
           });
       };
       

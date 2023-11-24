@@ -24,7 +24,7 @@ const Editar = () => {
 
     useEffect(
         () => {
-            axios.get(`http://localhost:3001/contents/retrieve/${id}`)
+            axios.get(`https://rediuxbacken.onrender.com/contents/retrieve/${id}`)
                 .then(
                     (response) => {
                         setTitulo(response.data.titulo)
@@ -44,7 +44,7 @@ const Editar = () => {
     function handleSubmit(event) {
         event.preventDefault()
         const conteudo = { titulo, autor, descricao, link, tags, midia }
-        axios.put(`http://localhost:3001/contents/update/${id}`, conteudo)
+        axios.put(`https://rediuxbacken.onrender.com/contents/update/${id}`, conteudo)
             .then(
                 (response) => {
                     alert(`Conteúdo  ${response.data._id} atualizado com sucesso!`)

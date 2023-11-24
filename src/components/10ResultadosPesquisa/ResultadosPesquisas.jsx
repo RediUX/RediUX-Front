@@ -51,7 +51,15 @@ const SearchResults = () => {
     setTag(event.target.value);
   };
 
-  console.log(searchResults);
+  console.log(searchResults[1]);
+  
+  const LocalizarMidia = (listaMidia) => {
+    for(var index in listaMidia) { 
+      if(listaMidia[index] === true){
+        return index
+      }
+    }
+  }
 
   return (
     <>
@@ -169,18 +177,19 @@ const SearchResults = () => {
       >
         {searchResults.length > 0 ? (
           <>
-            {searchResults.map((result) => (
+            {searchResults.map((result) =>  (
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "flex-start",
                   my: 5,
                   ml: 8,
-
+                  width:"400px"
+                  
                 }}
               >
-                <Card sx={{ mr: 2 }}>
-                  <div
+                <Card sx={{ mr: 2, height:"400px",display:"flex",flexDirection: "column",width: "100%" }}>
+                <div
                     style={{
                       width:'100%',
                       backgroundColor: '#becbeb'
@@ -195,52 +204,62 @@ const SearchResults = () => {
                       backgroundPosition: 'center',
                     }}
                     image={result.imgUrl || folder}
-                    title="Conteúdo"
+                    title={result.titulo}
                   />
                   </div>
                   <CardContent
                     key={result._id}
                     sx={{
-                      width: 240,
+                      width: "100%",
+                      display:"flex",
+                      flexDirection: "column",
+                      boxSizing: "border-box"
                     }}
                   >
                     <Stack
+                      
                       direction="row"
                       spacing={2}
                       sx={{
-                        alignItems: "center"
+                        display:"flex",
+                        alignItems: "start",
+                        justifyContent:"space-between",
+                        marginBottom:"10px"
                       }}
                     >
-                      <Typography variant="h6" component="div"> {result.titulo} </Typography>
-                      <Chip variant="outlined" size="small" icon={<Book />} sx={{ mr: 1 }}
-                        label={"Midia"
-                          // JSON.stringify(
-                          //   result.midia.Campo              
-                          // )
+                      <Typography variant="h6" component="div" > {result.titulo} </Typography>
+                      <Chip variant="outlined" size="small" icon={<Book />} sx={{ mr: 1 }} 
+                        label={LocalizarMidia(result.midia)
                         }
                       />
+                      
                     </Stack>
                     <Typography variant="p" component="div"> {result.descricao} </Typography>
+                    
                   </CardContent>
-                  <CardActions>
-                    <Link to={result.link} target="_blank">
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        sx={{
-                          mt: -1,
-                          ml: 1,
-                          mb: 1,
-                          color: "#0C2D8A",
-                          borderColor: "#0C2D8A",
-                          '&:hover': {
-                            backgroundColor: "#0C2D8A",
-                            color: "#BECBEA",
-                          },
-                        }}
-                      >
-                        Ir ao conteúdo
-                      </Button>
+                  
+                  <CardActions  
+                    sx={{
+                        mt: "auto"
+                      }}>
+                    <Link to= {result.link}  target="_blank">
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        mt: -1,
+                        ml: 1,
+                        mb: 1,
+                        color: "#0C2D8A",
+                        borderColor: "#0C2D8A",
+                        '&:hover': {
+                          backgroundColor: "#0C2D8A",
+                          color: "#BECBEA",
+                        },
+                      }}
+                    >
+                      Ir ao conteúdo
+                    </Button>
                     </Link>
                   </CardActions>
                 </Card>

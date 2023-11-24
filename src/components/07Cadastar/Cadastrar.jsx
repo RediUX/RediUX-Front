@@ -52,8 +52,6 @@ const Cadastrar = () => {
                     const promises = imgs.items.map((val) => getDownloadURL(val))
                     Promise.all(promises)
                         .then((urls) => {
-                            
-                            console.log(urls);
                             setImgUrl(urls);
                         })
                 }
@@ -73,7 +71,6 @@ const Cadastrar = () => {
         event.preventDefault()
 
         const conteudo = { titulo, autor, descricao, link, tags, midia, imgUrl }
-        console.log(conteudo);
         axios.post("http://localhost:3001/contents/register", conteudo)
             .then(
                 (response) => {
