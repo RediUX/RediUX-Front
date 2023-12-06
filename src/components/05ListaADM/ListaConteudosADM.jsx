@@ -13,7 +13,7 @@ const ConteudoADM = () => {
 
     useEffect(
         () => {
-            axios.get("https://rediuxbacken.onrender.com/contents/list")
+            axios.get("https://rediux-back-hheo.onrender.com/contents/list")
             .then(
                 (response)=>{
                     setConteudos(response.data)
@@ -40,7 +40,7 @@ const ConteudoADM = () => {
 
     function excluirConteudo(id) {
         if(window.confirm("Deseja Excluir? " + id)){
-            axios.delete(`https://rediuxbacken.onrender.com/contents/delete/${id}`)
+            axios.delete(`https://rediux-back-hheo.onrender.com/contents/delete/${id}`)
             .then(
                 (response)=>{
                     const resultado = conteudos.filter( conteudo => conteudo._id !== id)
