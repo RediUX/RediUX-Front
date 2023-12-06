@@ -25,7 +25,7 @@ const Conteudo = () => {
 
     useEffect(
         () => {
-            axios.get(`https://rediuxbacken.onrender.com/contents/retrieve/${id}`)
+            axios.get(`https://rediux-back-hheo.onrender.com/contents/retrieve/${id}`)
                 .then(
                     (response) => {
                         setTitulo(response.data.titulo)
@@ -46,7 +46,7 @@ const Conteudo = () => {
     function handleSubmit(event) {
         event.preventDefault()
         const conteudo = { titulo, autor, descricao, link, tags, midia, imgUrl }
-        axios.put(`https://rediuxbacken.onrender.com/contents/update/${id}`, conteudo)
+        axios.put(`https://rediux-back-hheo.onrender.com/contents/update/${id}`, conteudo)
             .then(
                 (response) => {
                     alert(`Conteúdo  ${response.data._id} atualizado com sucesso!`)
