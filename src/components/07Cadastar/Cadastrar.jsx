@@ -23,29 +23,46 @@ const Cadastrar = () => {
     const { livro, artigo, video, podcast } = midia
 
     const [file, setFile] = useState(null)
-    const [imgUrl, setImgUrl] = useState("")
-    
+    const [imgUrl, setImgUrl] = useState(null)
+    const [loadingImage, setLoadingImage] = useState(false);
+
     const handleChange = (newFile) => {
-        const imgRef = ref(imageDb, `files/${v4()}`)
-        setFile(newFile)
+        setFile(newFile);
+    };
+
+    const handleSubmit = async (event) => {
         
-        uploadBytes(imgRef, newFile)
-            .then((snapshot) => {
-                console.log("Arquivo ou blob enviado com sucesso!", snapshot)
-                return getDownloadURL(snapshot.ref)
-            })
-            .then((url) => {
-                setImgUrl(url)
-            })
-            .catch((error) => {
-                console.error("Erro ao enviar o arquivo: ", error)
-            })
-    }
-    
+        if (file) {
+            event.preventDefault();
+            const imgRef = ref(imageDb, `files/${v4()}`);
+
+            try {
+                setLoadingImage(true);
+                await uploadBytes(imgRef, file)
+                const url = await getDownloadURL(imgRef);
+                setImgUrl(url);
+                const conteudo = { titulo, autor, descricao, link, tags, midia, imgUrl:url };
+                await axios.post("https://rediux-back-hheo.onrender.com/contents/register", conteudo);
+            
+                alert("Conteudo " + titulo + " adicionado com sucesso!");
+                console.log(conteudo);
+                navigate("/ADM/ListaConteudos");
+            } catch (error) {
+                console.error("Erro ao enviar o arquivo ou cadastrar conteúdo: ", error);
+            } finally {
+                setLoadingImage(false);
+            }
+        } else {
+            
+            console.error("Nenhum arquivo selecionado para upload");
+        }
+    };
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         let isMounted = true;
-    
+
         listAll(ref(imageDb, "files"))
             .then((imgs) => {
                 if (isMounted) {
@@ -59,45 +76,25 @@ const Cadastrar = () => {
             .catch((error) => {
                 console.error("Erro ao listar as imagens: ", error);
             });
-    
+
         return () => {
             isMounted = false;
         };
     }, []);
 
-    const navigate = useNavigate()
+    const handleCheckBoxTags = (event) => {
+        setTags({
+            ...tags,
+            [event.target.name]: event.target.checked,
+        });
+    };
 
-    function handleSubmit(event) {
-        event.preventDefault()
-
-        const conteudo = { titulo, autor, descricao, link, tags, midia, imgUrl }
-        axios.post("https://rediux-back-hheo.onrender.com/contents/register", conteudo)
-            .then(
-                (response) => {
-                    alert("Conteudo " + titulo + " adicionado com sucesso!")
-                    navigate("/ADM/ListaConteudos")
-                }
-            )
-            .catch(error => console.log(error))
-    }
-
-    function handleCheckBoxTags(event) {
-        setTags(
-            {
-                ...tags,
-                [event.target.name]: event.target.checked
-            }
-        )
-    }
-
-    function handleCheckBoxMidia(event) {
-        setMidia(
-            {
-                ...midia,
-                [event.target.name]: event.target.checked
-            }
-        )
-    }
+    const handleCheckBoxMidia = (event) => {
+        setMidia({
+            ...midia,
+            [event.target.name]: event.target.checked,
+        });
+    };
 
     return (
         <>
@@ -255,6 +252,7 @@ const Cadastrar = () => {
                         </Link>
 
                         <Button
+                            disabled={loadingImage}
                             variant="contained"
                             type="submit"
                             sx={{

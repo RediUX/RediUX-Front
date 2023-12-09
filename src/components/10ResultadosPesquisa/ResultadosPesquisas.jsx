@@ -51,7 +51,6 @@ const SearchResults = () => {
     setTag(event.target.value);
   };
 
-  console.log(searchResults[1]);
   
   const LocalizarMidia = (listaMidia) => {
     for(var index in listaMidia) { 
@@ -60,6 +59,7 @@ const SearchResults = () => {
       }
     }
   }
+  console.log(searchResults);
 
   return (
     <>
@@ -178,6 +178,7 @@ const SearchResults = () => {
         {searchResults.length > 0 ? (
           <>
             {searchResults.map((result) =>  (
+              
               <Box
                 sx={{
                   display: "flex",
@@ -188,7 +189,7 @@ const SearchResults = () => {
                   
                 }}
               >
-                <Card sx={{ mr: 2, height:"400px",display:"flex",flexDirection: "column",width: "100%" }}>
+                <Card key={result._id} sx={{ mr: 2, height:"400px",display:"flex",flexDirection: "column",width: "100%" }}>
                 <div
                     style={{
                       width:'100%',
@@ -198,10 +199,9 @@ const SearchResults = () => {
                   <CardMedia
                     sx={{
                       height: 120,
-                      width: 80,
-                      margin: 'auto',
-                      backgroundSize: '90%',
-                      backgroundPosition: 'center',
+                      width: result.imgUrl !== undefined && result.imgUrl !== null ? 'auto' : 80,
+                      backgroundSize: result.imgUrl !== undefined && result.imgUrl !== null ? '100%' : '90%',
+                      margin:'auto'
                     }}
                     image={result.imgUrl || folder}
                     title={result.titulo}
