@@ -6,6 +6,10 @@ import { useEffect } from "react"
 import { useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import Tollbaradm from "../00TollbarADM/TollbarADM"
+import { MuiFileInput } from "mui-file-input"
+import { imageDb } from "../../firebase"
+import { getDownloadURL, listAll, ref, uploadBytes, uploadBytesResumable } from "@firebase/storage"
+import { v4 } from "uuid"
 
 const Editar = () => {
 
@@ -15,12 +19,54 @@ const Editar = () => {
     const [link, setLink] = useState("")
     const [tags, setTags] = useState({ carreira: false, fundamentosUX: false, designInteracao: false, UI: false, arquitetura: false })
     const [midia, setMidia] = useState({ livro: false, artigo: false, video: false, podcast: false })
-
+    const [imgUrl, setImgUrl] = useState(null)
+    const [file, setFile] = useState(null)
+    const [loadingImage, setLoadingImage] = useState(false);
 
     const { carreira, fundamentosUX, designInteracao, UI, arquitetura } = tags
     const { livro, artigo, video, podcast } = midia
     const { id } = useParams()
+
     const navigate = useNavigate()
+
+    const handleChange = (newFile) => {
+        setFile(newFile);
+    };
+    
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        let updatedImageUrl = imgUrl;
+    
+        if (file) {
+            
+            const imgRef = ref(imageDb, `files/${v4()}`);
+            try {
+                setLoadingImage(true);
+                await uploadBytes(imgRef, file);
+                updatedImageUrl = await getDownloadURL(imgRef);
+            } catch (error) {
+                console.error("Erro ao enviar o arquivo: ", error);
+                setLoadingImage(false);
+                return;
+            } finally {
+                setLoadingImage(false);
+            }
+        }
+    
+        const conteudo = { titulo, autor, descricao, link, tags, midia, imgUrl: updatedImageUrl };
+        try {
+            await axios.put(`https://rediux-back-hheo.onrender.com/contents/update/${id}`, conteudo)
+            .then(
+                (response) => {
+                    alert(`Conteúdo ${response.data._id} atualizado com sucesso!`)
+                    navigate("/ADM/ListaConteudos");
+                }
+            )
+            .catch(error => console.log(error));
+        } catch (error) {
+            console.error("Erro ao atualizar o conteúdo: ", error);
+        }
+    };
 
     useEffect(
         () => {
@@ -28,31 +74,22 @@ const Editar = () => {
                 .then(
                     (response) => {
                         setTitulo(response.data.titulo)
-                        setAutor(response.data.autor)
-                        setDescricao(response.data.descricao)
+                        setAutor(response.data.author)
+                        setDescricao(response.data.description)
                         setLink(response.data.link)
                         setTags(response.data.tags)
                         setMidia(response.data.midia)
+                        setImgUrl(response.data.imgUrl)
+                        console.log(response.data);
                     }
                 )
                 .catch(error => console.log(error))
         }
         ,
-        []
+        [id]
     )
 
-    function handleSubmit(event) {
-        event.preventDefault()
-        const conteudo = { titulo, autor, descricao, link, tags, midia }
-        axios.put(`https://rediux-back-hheo.onrender.com/contents/update/${id}`, conteudo)
-            .then(
-                (response) => {
-                    alert(`Conteúdo  ${response.data._id} atualizado com sucesso!`)
-                    navigate("/ADM/ListaConteudos")
-                }
-            )
-            .catch(error => console.log(error))
-    }
+    
 
     function handleCheckBoxTags(event) {
         setTags(
@@ -208,6 +245,17 @@ const Editar = () => {
 
                      </Stack>
 
+                     <MuiFileInput
+                        value={file}
+                        onChange={handleChange}
+                        placeholder={imgUrl !== undefined ? "Atualizar Capa do Conteúdo" : "Adicionar Capa do Conteúdo"}
+                        sx={{
+                            width: 640,
+                            my: 2,
+                            backgroundColor: "#f0f0f0",
+                        }}
+                    />
+                    {console.log(imgUrl)}
                     <Box sx={{
                         display: "flex",
                         justifyContent: "center",
@@ -226,6 +274,7 @@ const Editar = () => {
                             </Button>
                         </Link>
                         <Button
+                            disabled={loadingImage}
                             variant="contained"
                             type="submit"
                             sx={{

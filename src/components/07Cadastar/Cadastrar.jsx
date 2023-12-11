@@ -31,9 +31,8 @@ const Cadastrar = () => {
     };
 
     const handleSubmit = async (event) => {
-        
+        event.preventDefault();
         if (file) {
-            event.preventDefault();
             const imgRef = ref(imageDb, `files/${v4()}`);
 
             try {
